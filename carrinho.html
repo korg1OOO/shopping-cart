@@ -23,12 +23,13 @@
 
         <div class="carrinho-produtos">
             
-            <!-- Criação dos produtos do storage -->
+            <!--Aqui serão colocados os items do carrinho dinamicamente -->
+                        
 
         </div>
 
         <div class="total">
-            <p>Total: <span class="total-compra"></span></p>
+            <p>Total: R$ <span class="total-compra"></span></p>
             <button class="botao-comprar">Finalizar Compra</button>
         </div>
     </main>
@@ -49,17 +50,22 @@
         function criarItemCarrinho(itemLista) {
             
             let itemCarrinho = document.createElement('div');
+            //itemCarrinho.classList.add = 'item-carrinho';
             itemCarrinho.classList.add('item-carrinho');
 
             let item = document.createElement('div');
+            //item.classList.add = 'item';
             item.classList.add('item');
-
+            
             let imagem = document.createElement('img');
+            //item.classList.add = 'item';
             imagem.src = "https://picsum.photos/300/500";
-            imagem.classList.add("item-img");
+            imagem.classList.add('item-img')
 
-            item.appendChild(imagem);
-
+            let remover = document.createElement('button');
+            remover.textContent = "Remover";
+            remover.classList.add('botao-remover')
+           
             let itemInfo = document.createElement('div');
             itemInfo.classList.add('item-info');
 
@@ -75,64 +81,50 @@
             quantidadeProduto.type = "number"
             quantidadeProduto.value = itemLista.quantidade;
 
+            item.appendChild(imagem)
             itemInfo.appendChild(nomeProduto);
             itemInfo.appendChild(precoProduto);
             itemInfo.appendChild(quantidadeProduto);
-
-            let botaoRemover = document.createElement('button');
-            botaoRemover.classList.add('botao-remover');
-            botaoRemover.textContent = 'Remover';
-            
             item.appendChild(itemInfo);
-            itemCarrinho.appendChild(item);
-            itemCarrinho.appendChild(botaoRemover);
+            itemCarrinho.prepend(item);
 
             let carrinho = document.querySelector('.carrinho-produtos');
             carrinho.appendChild(itemCarrinho);
+            itemCarrinho.appendChild(remover)
 
-            botaoRemover.addEventListener('click', ()=>{
-                itemCarrinho.remove(itemCarrinho);
+            remover.addEventListener('click',()=>{
+                itemCarrinho.remove(itemCarrinho)
 
-                let carrinho = localStorage.getItem('carrinho');
-                carrinho = JSON.parse(carrinho);
-
-                carrinho.forEach((produto, index) => {
-                    if (produto.nome == itemLista.nome) {
-                        carrinho.splice(index, 1);
+                let carrinho = JSON.parse(localStorage.getItem('carrinho'));
+                carrinho.forEach((produto,index) => {
+                    if(produto.nome == itemLista.nome){
+                        carrinho.splice(index,1)
                     }
                 });
+                carrinho = JSON.stringify(carrinho)
+                localStorage.setItem('carrinho', carrinho)
+            })
 
-                carrinho = JSON.stringify(carrinho);
-                localStorage.setItem('carrinho', carrinho);
-
-            });
-        }
+        }//fim criar item carrinho
 
         function atualizarTotal(){
-
+            let carrinho = JSON.parse(localStorage.getItem('carrinho'));
             let total = 0;
-
-            let carrinho = localStorage.getItem('carrinho');
-            carrinho = JSON.parse(carrinho);
-
-            carrinho.forEach((produto, index)=> {
-
-                let preco = (produto.preco);
-                preco = preco.replace('R$', '');
-                preco = preco.replace(',',  '.');
-
+            carrinho.forEach((produto) => {
+                let preco = produto.preço;
+                preco = preco.replace('R$','')
+                preco = preco.replace(',','.')
                 let quantidade = produto.quantidade;
-
-                total = total + (quantidade * preco);
-
+                total += preco *quantidade;
+                
             });
+            let totalCompra = document.querySelector('.total-compra')
 
-            let totalCompra = document.querySelector('.total-compra');
             totalCompra.textContent = total;
-
         }
 
         atualizarTotal();
+
 
     </script>
 
